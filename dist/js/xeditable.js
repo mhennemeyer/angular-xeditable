@@ -1,7 +1,7 @@
 /*!
 angular-xeditable - 0.1.10
 Edit-in-place for angular.js
-Build date: 2016-01-12 
+Build date: 2016-02-12 
 */
 /**
  * Angular-xeditable module 
@@ -128,14 +128,16 @@ angular.module('xeditable').directive('editableBsdate', ['editableDirectiveFacto
 				inputDatePicker.attr('date-picker-append-to-body', this.attrs.eDatePickerAppendToBody || false);
 				inputDatePicker.attr('date-disabled', this.attrs.eDateDisabled);
 
-				buttonDatePicker.attr('ng-click',this.attrs.eNgClick);
-
-				buttonWrapper.append(buttonDatePicker);
 				this.inputEl.prepend(inputDatePicker);
-				this.inputEl.append(buttonWrapper);
 
 				this.inputEl.removeAttr('class');
-				this.inputEl.attr('class','input-group');
+
+                if (this.attrs.buttons !== 'no') {
+                    buttonDatePicker.attr('ng-click', this.attrs.eNgClick);
+                    buttonWrapper.append(buttonDatePicker);
+                    this.inputEl.append(buttonWrapper);
+                    this.inputEl.attr('class', 'input-group');
+                }
 
 			}
     });
@@ -385,7 +387,7 @@ angular.module('xeditable').factory('editableController',
     self.parent = {};
 
     //will be undefined if icon_set is default and theme is default
-    self.icon_set = editableOptions.icon_set === 'default' ? editableIcons.default[editableOptions.theme] : editableIcons.external[editableOptions.icon_set];
+    self.icon_set = editableOptions.icon_set === 'default' ? editableIcons['default'][editableOptions.theme] : editableIcons.external[editableOptions.icon_set];
 
     //to be overwritten by directive
     self.inputTpl = '';
@@ -947,7 +949,8 @@ function($parse, $compile, editableThemes, $rootScope, $document, editableContro
           if(!attrs.eForm || attrs.eClickable) {
             elem.addClass('editable-click');
             elem.bind(editableOptions.activationEvent, function(e) {
-              e.preventDefault();
+              if (e.preventDefault) {e.preventDefault();}
+              else {e.returnValue = false;}
               e.editable = eCtrl;
               scope.$apply(function(){
                 scope.$form.$show();
@@ -1450,7 +1453,9 @@ angular.module('xeditable').directive('editableForm',
               }
 
               elem.bind('submit', function(event) {
-                event.preventDefault();
+                if (event.preventDefault) {event.preventDefault();}
+                else {event.returnValue = false;}
+                  
                 scope.$apply(function() {
                   eForm.$submit();
                 });
@@ -2109,7 +2114,7 @@ angular.module('xeditable').factory('editableIcons', function() {
 
   var icons = {
     //Icon-set to use, defaults to bootstrap icons
-    default: {
+    'default': {
       'bs2': {
         ok: 'icon-ok icon-white',
         cancel: 'icon-remove'
@@ -2201,6 +2206,7 @@ angular.module('xeditable').factory('editableThemes', function() {
           case 'editableTime':
           case 'editableMonth':
           case 'editableWeek':
+          case 'editablePassword':
             this.inputEl.addClass('form-control');
             if(this.theme.inputClass) {
               // don`t apply `input-sm` and `input-lg` to select multiple
