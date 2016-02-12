@@ -135,7 +135,9 @@ angular.module('xeditable').directive('editableForm',
               }
 
               elem.bind('submit', function(event) {
-                event.preventDefault();
+                if (event.preventDefault) {event.preventDefault();}
+                else {event.returnValue = false;}
+                  
                 scope.$apply(function() {
                   eForm.$submit();
                 });

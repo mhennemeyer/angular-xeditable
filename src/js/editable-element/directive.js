@@ -126,7 +126,8 @@ function($parse, $compile, editableThemes, $rootScope, $document, editableContro
           if(!attrs.eForm || attrs.eClickable) {
             elem.addClass('editable-click');
             elem.bind(editableOptions.activationEvent, function(e) {
-              e.preventDefault();
+              if (e.preventDefault) {e.preventDefault();}
+              else {e.returnValue = false;}
               e.editable = eCtrl;
               scope.$apply(function(){
                 scope.$form.$show();
